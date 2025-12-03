@@ -245,12 +245,14 @@ begin
                     else
                         acc_input <= std_logic_vector(mul_p(63 downto 32));
                     end if;
+                     result_ready <= '1';
                     state <= SHOW_RES;
                     
                 elsif op_code = "1011" then --div
                     if mem_b = zero then
                         led_div0_reg <= '1';
                         acc_input <= (others => '0');
+                         result_ready <= '1';
                         state <= SHOW_RES;
                     else
                         --start div
@@ -259,6 +261,7 @@ begin
                     end if;
                 else 
                     acc_input <= alu_result;
+                    result_ready <= '1';
                     state <= SHOW_RES;
                 end  if;
             when WAIT_DIV =>
@@ -269,9 +272,9 @@ begin
                         acc_input <= div_r;
                     end if;
                     state <= SHOW_RES;
+                    result_ready <= '1';
                 end if;
             when SHOW_RES => 
-                 result_ready <= '1';
                  if en_rst = '1' then
                     addr <= "0000";
                     acc_input <= (others => '0');
@@ -294,6 +297,7 @@ begin
                  end if;
             when LOAD_ACC =>
                     acc_load <= '1';
+                    acc_input <= result_mux;
                     result_ready <= '0';
                     state <= IDLE;
             when others =>
